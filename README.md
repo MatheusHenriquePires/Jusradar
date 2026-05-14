@@ -1,4 +1,4 @@
-# JusRadar
+<img width="991" height="1133" alt="image" src="https://github.com/user-attachments/assets/38543343-67fb-4944-a5bd-04caadea6cbd" /># JusRadar
 
 JusRadar e uma API backend em Java com Spring Boot para consulta e monitoramento de processos judiciais. O projeto integra com a API publica do DataJud, permite cadastro/login de usuarios e possui base para registrar monitoramentos por cliente e advogado.
 
@@ -184,3 +184,5 @@ src/main/java/br/com/jusradar
 - `identity`: cadastro, login, usuarios e JWT.
 - `monitoramento`: cadastro e rotinas de monitoramento.
 - `config` e `shared`: configuracoes e utilitarios compartilhados.
+<img width="991" height="1133" alt="image" src="https://github.com/user-attachments/assets/8319ef87-b2bd-419b-89ac-6e449e55578a" />
+
