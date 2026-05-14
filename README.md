@@ -184,5 +184,4 @@ src/main/java/br/com/jusradar
 - `identity`: cadastro, login, usuarios e JWT.
 - `monitoramento`: cadastro e rotinas de monitoramento.
 - `config` e `shared`: configuracoes e utilitarios compartilhados.
-<img width="991" height="1133" alt="image" src="https://github.com/user-attachments/assets/8319ef87-b2bd-419b-89ac-6e449e55578a" />
 
