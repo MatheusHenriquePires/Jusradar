@@ -1,12 +1,12 @@
 package br.com.jusradar.identity.infra.jwt;
 
-import br.com.jusradar.identity.domain.Usuario;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
@@ -23,14 +23,14 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String gerarToken(Usuario usuario) {
-
+    public String gerarToken(UUID advogadoId, String email, String role) {
         return Jwts.builder()
-            .subject(usuario.getEmail())
-            .claim("role", usuario.getRole())
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSigningKey())
-            .compact();
+                .subject(email)
+                .claim("advogadoId", advogadoId.toString())
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
+                .compact();
     }
 }

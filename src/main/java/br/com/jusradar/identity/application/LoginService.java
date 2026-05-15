@@ -32,7 +32,7 @@ public class LoginService {
             throw new RuntimeException("Senha inválida");
         }
 
-        String token = jwtService.gerarToken(usuario);
+        String token = jwtService.gerarToken(usuario.getId(), usuario.getEmail(), usuario.getRole());
 
         return new AuthResponse(token);
     }

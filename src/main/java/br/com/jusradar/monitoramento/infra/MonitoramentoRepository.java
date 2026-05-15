@@ -4,8 +4,9 @@ import br.com.jusradar.monitoramento.domain.Monitoramento;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface MonitoramentoRepository extends JpaRepository<Monitoramento, Long> {
+public interface MonitoramentoRepository extends JpaRepository<Monitoramento, UUID> {
 
-    List<Monitoramento> findByAdvogadoEmail(String email);
+    List<Monitoramento> findByAdvogadoId(UUID advogadoId);
 }

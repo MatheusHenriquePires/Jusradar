@@ -1,12 +1,15 @@
 package br.com.jusradar.monitoramento.domain;
 
-import br.com.jusradar.identity.domain.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
+import br.com.jusradar.identity.domain.Usuario;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "monitoramentos")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,25 +18,25 @@ import java.time.LocalDateTime;
 public class Monitoramento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    private UUID id;
 
     private String numeroProcesso;
+
     private String tribunal;
 
+    @Column(name = "documento")
+    private String documentoCliente;
+
     private String ultimaMovimentacao;
+
     private LocalDateTime ultimaConsulta;
 
     @ManyToOne
-    @JoinColumn(name = "advogado_id", nullable = false)
+    @JoinColumn(name = "advogado_id")
     private Usuario advogado;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
-
-    public Object getDocumento() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDocumento'");
-    }
 }

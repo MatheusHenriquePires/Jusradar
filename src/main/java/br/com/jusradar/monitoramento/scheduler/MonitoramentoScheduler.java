@@ -24,15 +24,11 @@ public class MonitoramentoScheduler {
 
         log.info("🔎 Iniciando monitoramento automático...");
 
-        // simulação multi-tenant (depois vem do JWT)
-        Long advogadoId = 1L;
-
-        List<Monitoramento> lista =
-                monitoramentoService.buscarPorAdvogado(advogadoId);
+        List<Monitoramento> lista = monitoramentoService.listarTodos();
 
         for (Monitoramento m : lista) {
 
-            String documento = String.valueOf(m.getDocumento());
+            String documento = m.getDocumentoCliente();
             var processos = dataJudClient.buscar(
                     documento,
                     m.getTribunal()
@@ -45,7 +41,7 @@ public class MonitoramentoScheduler {
             if (m.getUltimaMovimentacao() == null ||
                 !m.getUltimaMovimentacao().equals(novoStatus)) {
 
-                log.info("📢 Mudança detectada: {}", m.getDocumento());
+                log.info("📢 Mudança detectada: {}", m.getDocumentoCliente());
 
                 m.setUltimaMovimentacao(novoStatus);
 

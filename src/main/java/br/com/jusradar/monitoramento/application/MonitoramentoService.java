@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +18,11 @@ public class MonitoramentoService {
         return repository.save(m);
     }
 
-    public List<Monitoramento> buscarPorAdvogado(Long advogadoId) {
-        return repository.findAll().stream()
-                .filter(m -> advogadoId.equals(m.getAdvogado()))
-                .collect(Collectors.toList());
+    public List<Monitoramento> listarTodos() {
+        return repository.findAll();
+    }
+
+    public List<Monitoramento> buscarPorAdvogado(UUID advogadoId) {
+        return repository.findByAdvogadoId(advogadoId);
     }
 }

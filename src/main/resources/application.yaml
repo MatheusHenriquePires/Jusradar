@@ -1,3 +1,10 @@
 spring:
   application:
     name: jusradar
+
+  flyway:
+    validateOnMigrate: false
+
+  jpa:
+    hibernate:
+      ddl-auto: validate

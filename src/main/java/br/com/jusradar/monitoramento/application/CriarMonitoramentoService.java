@@ -25,6 +25,7 @@ public class CriarMonitoramentoService {
         Monitoramento monitoramento = Monitoramento.builder()
                 .numeroProcesso(request.getNumeroProcesso())
                 .tribunal(request.getTribunal())
+                .documentoCliente(cliente.getDocumento())
                 .cliente(cliente)
                 .ultimaConsulta(LocalDateTime.now())
                 .build();
