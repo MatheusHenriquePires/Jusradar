@@ -22,15 +22,16 @@ public class Monitoramento {
     private UUID id;
 
     private String numeroProcesso;
-
     private String tribunal;
 
     @Column(name = "documento")
     private String documentoCliente;
 
     private String ultimaMovimentacao;
-
     private LocalDateTime ultimaConsulta;
+
+    @Column(name = "criado_em", nullable = false)
+    private LocalDateTime criadoEm;
 
     @ManyToOne
     @JoinColumn(name = "advogado_id")
