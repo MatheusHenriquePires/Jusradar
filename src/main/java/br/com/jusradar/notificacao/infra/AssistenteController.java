@@ -30,22 +30,22 @@ public class AssistenteController {
             request.getTribunal()
         );
 
-        String classe = "";
-        String ultimaMovimentacao = "";
+        String analise;
 
-        if (!consulta.processos().isEmpty()) {
-            var processo = consulta.processos().get(0);
-            classe = processo.getClasse();
-            ultimaMovimentacao = processo.getSituacao();
+        if (consulta.processos().isEmpty()) {
+            analise = assistente.analisar(
+                request.getNumeroProcesso(),
+                request.getTribunal(),
+                "",
+                "",
+                request.getPergunta()
+            );
+        } else {
+            analise = assistente.analisar(
+                consulta.processos().get(0),
+                request.getPergunta()
+            );
         }
-
-        String analise = assistente.analisar(
-            request.getNumeroProcesso(),
-            request.getTribunal(),
-            classe,
-            ultimaMovimentacao,
-            request.getPergunta()
-        );
 
         return ResponseEntity.ok(Map.of(
             "numeroProcesso", request.getNumeroProcesso(),

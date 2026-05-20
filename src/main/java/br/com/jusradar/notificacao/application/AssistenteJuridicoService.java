@@ -1,13 +1,21 @@
 package br.com.jusradar.notificacao.application;
 
+import br.com.jusradar.consulta.domain.Processo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -15,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AssistenteJuridicoService {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${groq.api-key}")
     private String apiKey;
@@ -25,78 +34,102 @@ public class AssistenteJuridicoService {
     @Value("${groq.model}")
     private String model;
 
- public String analisar(String numeroProcesso, String tribunal,
-                       String classe, String ultimaMovimentacao,
-                       String pergunta) {
-    try {
-        String prompt = montarPrompt(numeroProcesso, tribunal,
-            classe, ultimaMovimentacao, pergunta);
+    public String analisar(String numeroProcesso, String tribunal,
+                           String classe, String ultimaMovimentacao,
+                           String pergunta) {
+        Processo processo = Processo.builder()
+            .numero(numeroProcesso)
+            .tribunal(tribunal)
+            .classe(classe)
+            .situacao(ultimaMovimentacao)
+            .build();
 
-        String body = """
-            {
-              "model": "%s",
-              "messages": [
-                {
-                  "role": "system",
-                  "content": "Você é um advogado especialista brasileiro com 20 anos de experiência em direito civil, penal e trabalhista. Responda sempre em português, de forma clara, objetiva e profissional."
-                },
-                {
-                  "role": "user",
-                  "content": "%s"
-                }
-              ],
-              "temperature": 0.7,
-              "max_tokens": 2048
-            }
-            """.formatted(model, prompt.replace("\"", "'").replace("\n", "\\n"));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + apiKey);
-
-        // Recebe como String em vez de JsonNode
-        ResponseEntity<String> response = restTemplate.exchange(
-            groqUrl,
-            HttpMethod.POST,
-            new HttpEntity<>(body, headers),
-            String.class
-        );
-
-        // Parseia manualmente
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
-
-        return root.path("choices").get(0)
-            .path("message")
-            .path("content").asText();
-
-    } catch (Exception e) {
-        log.error("❌ Erro ao consultar Groq: {}", e.getMessage());
-        return "Não foi possível gerar análise no momento.";
+        return analisar(processo, pergunta);
     }
-}
 
-    private String montarPrompt(String numeroProcesso, String tribunal,
-                                String classe, String ultimaMovimentacao,
-                                String pergunta) {
+    public String analisar(Processo processo, String pergunta) {
+        try {
+            String prompt = montarPrompt(processo, pergunta);
+            String body = montarRequisicao(prompt);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiKey);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                groqUrl,
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class
+            );
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            return root.path("choices")
+                .path(0)
+                .path("message")
+                .path("content")
+                .asText();
+
+        } catch (Exception e) {
+            log.error("Erro ao consultar Groq: {}", e.getMessage());
+            return "Nao foi possivel gerar analise no momento.";
+        }
+    }
+
+    String montarPrompt(Processo processo, String pergunta) {
         return """
-            Analise o processo judicial abaixo e responda como um advogado experiente.
+            Analise o processo judicial abaixo usando apenas os dados informados.
+            Quando uma informacao estiver ausente, deixe isso claro e nao invente fatos.
 
-            Dados do processo:
-            - Número: %s
+            Dados reais do processo:
+            - Numero: %s
             - Tribunal: %s
             - Classe: %s
-            - Última movimentação: %s
+            - Orgao julgador: %s
+            - Situacao ou ultima movimentacao: %s
+            - Data da ultima atualizacao: %s
 
-            Pergunta: %s
+            Pergunta do usuario:
+            %s
 
-            Responda com:
-            1. Resumo da situação atual
-            2. Análise jurídica
-            3. Próximos passos recomendados
-            4. Prazos importantes
-            5. Sugestão de petição se aplicável
-            """.formatted(numeroProcesso, tribunal, classe,
-                          ultimaMovimentacao, pergunta);
+            Responda em portugues, com linguagem clara e profissional, seguindo esta estrutura:
+            1. Resumo objetivo da situacao atual
+            2. Pontos juridicos relevantes a partir dos dados do processo
+            3. Riscos, urgencias e prazos que devem ser verificados
+            4. Proximos passos recomendados
+            5. Sugestao de peticao ou providencia, se aplicavel
+            """.formatted(
+            valor(processo.getNumero()),
+            valor(processo.getTribunal()),
+            valor(processo.getClasse()),
+            valor(processo.getOrgaoJulgador()),
+            valor(processo.getSituacao()),
+            valor(processo.getDataUltimaMovimentacao()),
+            valor(pergunta)
+        );
+    }
+
+    private String montarRequisicao(String prompt) throws Exception {
+        Map<String, Object> body = Map.of(
+            "model", model,
+            "messages", List.of(
+                Map.of(
+                    "role", "system",
+                    "content", "Voce e um advogado especialista brasileiro com experiencia em direito civil, penal e trabalhista. Responda sempre em portugues, de forma clara, objetiva e profissional."
+                ),
+                Map.of(
+                    "role", "user",
+                    "content", prompt
+                )
+            ),
+            "temperature", 0.3,
+            "max_tokens", 2048
+        );
+
+        return objectMapper.writeValueAsString(body);
+    }
+
+    private String valor(String valor) {
+        return valor == null || valor.isBlank() ? "Nao informado" : valor;
     }
 }
