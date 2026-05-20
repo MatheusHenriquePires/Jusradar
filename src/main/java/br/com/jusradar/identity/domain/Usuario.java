@@ -24,7 +24,8 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UsuarioRole role;
 
     @Column(name = "criado_em")
     private java.time.LocalDateTime criadoEm;

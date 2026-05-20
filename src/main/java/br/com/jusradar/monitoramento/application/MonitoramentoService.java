@@ -25,4 +25,12 @@ public class MonitoramentoService {
     public List<Monitoramento> buscarPorAdvogado(UUID advogadoId) {
         return repository.findByAdvogadoId(advogadoId);
     }
+
+    public Monitoramento buscarDoAdvogado(UUID id, UUID advogadoId) {
+        return repository.findByIdAndAdvogadoId(id, advogadoId)
+            .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND,
+                "Monitoramento não encontrado"
+            ));
+    }
 }

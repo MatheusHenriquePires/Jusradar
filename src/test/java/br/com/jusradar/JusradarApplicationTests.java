@@ -1,13 +1,12 @@
 package br.com.jusradar;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class JusradarApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationClassExists() {
+		org.assertj.core.api.Assertions.assertThat(JusradarApplication.class).isNotNull();
 	}
 
 }

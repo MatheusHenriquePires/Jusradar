@@ -5,6 +5,7 @@ import br.com.jusradar.monitoramento.application.CriarMonitoramentoService;
 import br.com.jusradar.monitoramento.application.MonitoramentoService;
 import br.com.jusradar.monitoramento.domain.Monitoramento;
 import br.com.jusradar.notificacao.application.NotificacaoService;
+import br.com.jusradar.shared.security.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,12 @@ public class MonitoramentoController {
 
     @PostMapping
     public ResponseEntity<Monitoramento> criar(@RequestBody CriarMonitoramentoRequest request) {
-        return ResponseEntity.status(201).body(criarService.criar(request));
+        return ResponseEntity.status(201).body(criarService.criar(request, AuthUtils.getUsuarioIdLogado()));
     }
 
     @GetMapping
     public List<Monitoramento> listarTodos() {
-        return service.listarTodos();
+        return service.buscarPorAdvogado(AuthUtils.getUsuarioIdLogado());
     }
 
     @GetMapping("/advogado/{advogadoId}")
@@ -38,12 +39,8 @@ public class MonitoramentoController {
 
     @PostMapping("/testar-notificacao/{id}")
     public ResponseEntity<String> testarNotificacao(@PathVariable UUID id) {
-        var m = service.listarTodos().stream()
-            .filter(mon -> mon.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Monitoramento não encontrado"));
-
-        notificacaoService.notificarMovimentacao(m);
+        var monitoramento = service.buscarDoAdvogado(id, AuthUtils.getUsuarioIdLogado());
+        notificacaoService.notificarMovimentacao(monitoramento);
         return ResponseEntity.ok("Email enviado com sucesso!");
     }
 }

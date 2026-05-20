@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface MonitoramentoRepository extends JpaRepository<Monitoramento, UUID> {
 
     List<Monitoramento> findByAdvogadoId(UUID advogadoId);
+
+    java.util.Optional<Monitoramento> findByIdAndAdvogadoId(UUID id, UUID advogadoId);
 }
