@@ -9,11 +9,22 @@ const emptyMonitoramento = {
   documentoCliente: '',
 };
 
+const emptyDocumento = {
+  numeroProcesso: '',
+  tribunal: 'TJPI',
+  nomeAdvogado: '',
+  oabNumero: '',
+  nomeCliente: '',
+  pergunta: '',
+  tipoDocumento: 'PETICAO_SIMPLES',
+};
+
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'dashboard', label: 'Processos' },
   { id: 'dashboard', label: 'Clientes' },
   { id: 'chat', label: 'Chat IA' },
+  { id: 'documentos', label: 'Documentos' },
   { id: 'dashboard', label: 'Relatorios' },
   { id: 'dashboard', label: 'Configuracoes' },
 ];
@@ -470,6 +481,139 @@ function ChatPage({ onNavigate }) {
   );
 }
 
+function DocumentosPage({ onNavigate }) {
+  const [form, setForm] = useState(emptyDocumento);
+  const [loadingFormat, setLoadingFormat] = useState('');
+  const [error, setError] = useState('');
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleDownload(formato) {
+    setLoadingFormat(formato);
+    setError('');
+
+    try {
+      const { blob, fileName } = await api.gerarDocumento(form, formato);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = fileName || `documento.${formato}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message || 'Nao foi possivel baixar o documento.');
+    } finally {
+      setLoadingFormat('');
+    }
+  }
+
+  return (
+    <main className="document-page">
+      <aside className="sidebar">
+        <h2>JusRadar</h2>
+
+        <ul className="menu">
+          {menuItems.map((item, index) => (
+            <li key={`${item.label}-${index}`}>
+              <button type="button" onClick={() => onNavigate(item.id)}>
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <section className="document-main">
+        <div className="topbar">
+          <h1>Download de Documentos</h1>
+          <button type="button" className="secondary-button" onClick={() => onNavigate('dashboard')}>
+            Voltar
+          </button>
+        </div>
+
+        {error && <div className="feedback error">{error}</div>}
+
+        <form className="document-form" onSubmit={(event) => event.preventDefault()}>
+          <input
+            type="text"
+            value={form.numeroProcesso}
+            onChange={(event) => updateField('numeroProcesso', event.target.value)}
+            placeholder="Numero do processo"
+            required
+          />
+          <input
+            type="text"
+            value={form.tribunal}
+            onChange={(event) => updateField('tribunal', event.target.value)}
+            placeholder="Tribunal"
+            required
+          />
+          <input
+            type="text"
+            value={form.nomeAdvogado}
+            onChange={(event) => updateField('nomeAdvogado', event.target.value)}
+            placeholder="Nome do advogado"
+            required
+          />
+          <input
+            type="text"
+            value={form.oabNumero}
+            onChange={(event) => updateField('oabNumero', event.target.value)}
+            placeholder="OAB/UF e numero"
+            required
+          />
+          <input
+            type="text"
+            value={form.nomeCliente}
+            onChange={(event) => updateField('nomeCliente', event.target.value)}
+            placeholder="Nome do cliente"
+            required
+          />
+          <select
+            value={form.tipoDocumento}
+            onChange={(event) => updateField('tipoDocumento', event.target.value)}
+            required
+          >
+            <option value="PETICAO_SIMPLES">Peticao simples</option>
+            <option value="RECURSO">Recurso</option>
+            <option value="HABEAS_CORPUS">Habeas corpus</option>
+            <option value="MANIFESTACAO">Manifestacao</option>
+            <option value="REQUERIMENTO_OAB">Requerimento OAB</option>
+          </select>
+          <textarea
+            value={form.pergunta}
+            onChange={(event) => updateField('pergunta', event.target.value)}
+            placeholder="Contexto ou pedido para compor o documento"
+            rows="6"
+          />
+
+          <div className="document-actions">
+            <button
+              type="button"
+              disabled={Boolean(loadingFormat)}
+              onClick={() => handleDownload('pdf')}
+            >
+              {loadingFormat === 'pdf' ? 'Gerando PDF...' : 'Baixar PDF'}
+            </button>
+            <button
+              type="button"
+              disabled={Boolean(loadingFormat)}
+              onClick={() => handleDownload('docx')}
+            >
+              {loadingFormat === 'docx' ? 'Gerando DOCX...' : 'Baixar DOCX'}
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
   const [page, setPage] = useState('login');
   const [user, setUser] = useState(() => getStoredUser());
@@ -499,6 +643,10 @@ export default function App() {
 
   if (page === 'chat' && user) {
     return <ChatPage onNavigate={setPage} />;
+  }
+
+  if (page === 'documentos' && user) {
+    return <DocumentosPage onNavigate={setPage} />;
   }
 
   return <LoginPage onAuthenticated={setUser} />;

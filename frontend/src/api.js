@@ -63,6 +63,32 @@ async function request(path, options = {}) {
   return payload;
 }
 
+async function download(path, data) {
+  const token = getToken();
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || 'Nao foi possivel gerar o documento.');
+  }
+
+  const blob = await response.blob();
+  const disposition = response.headers.get('content-disposition') || '';
+  const fileNameMatch = disposition.match(/filename="?([^"]+)"?/i);
+
+  return {
+    blob,
+    fileName: fileNameMatch?.[1] || 'documento',
+  };
+}
+
 export const api = {
   login: (data) =>
     request('/auth/login', {
@@ -89,4 +115,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  gerarDocumento: (data, formato) =>
+    download(`/assistente/gerar-documento?formato=${formato}`, data),
 };

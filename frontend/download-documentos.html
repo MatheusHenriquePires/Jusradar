@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JusRadar - Download de Documentos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f4f4;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgb(0 0 0 / 16%);
+      margin: 0 auto;
+      max-width: 980px;
+      padding: 28px;
+    }
+
+    .header {
+      align-items: center;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      color: #111827;
+      font-size: 28px;
+    }
+
+    .brand {
+      color: #f97316;
+      font-weight: bold;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 14px;
+      width: 100%;
+    }
+
+    textarea {
+      grid-column: 1 / -1;
+      min-height: 160px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+    }
+
+    button {
+      background: #f97316;
+      border: 0;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      padding: 14px 22px;
+    }
+
+    button:hover {
+      background: #ea580c;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .feedback {
+      border-radius: 10px;
+      display: none;
+      grid-column: 1 / -1;
+      padding: 12px 14px;
+    }
+
+    .feedback.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 14px;
+      }
+
+      .header,
+      .actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <div>
+        <div class="brand">JusRadar</div>
+        <h1>Download de Documentos</h1>
+      </div>
+    </header>
+
+    <form id="documentForm">
+      <input name="numeroProcesso" type="text" placeholder="Numero do processo" required>
+      <input name="tribunal" type="text" placeholder="Tribunal" value="TJPI" required>
+      <input name="nomeAdvogado" type="text" placeholder="Nome do advogado" required>
+      <input name="oabNumero" type="text" placeholder="OAB/UF e numero" required>
+      <input name="nomeCliente" type="text" placeholder="Nome do cliente" required>
+      <select name="tipoDocumento" required>
+        <option value="PETICAO_SIMPLES">Peticao simples</option>
+        <option value="RECURSO">Recurso</option>
+        <option value="HABEAS_CORPUS">Habeas corpus</option>
+        <option value="MANIFESTACAO">Manifestacao</option>
+        <option value="REQUERIMENTO_OAB">Requerimento OAB</option>
+      </select>
+      <textarea name="pergunta" placeholder="Contexto ou pedido para compor o documento"></textarea>
+      <div id="feedback" class="feedback"></div>
+      <div class="actions">
+        <button type="button" data-format="pdf">Baixar PDF</button>
+        <button type="button" data-format="docx">Baixar DOCX</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('documentForm');
+    const feedback = document.getElementById('feedback');
+    const buttons = document.querySelectorAll('[data-format]');
+
+    function getFormData() {
+      return Object.fromEntries(new FormData(form).entries());
+    }
+
+    function setLoading(active, format) {
+      buttons.forEach((button) => {
+        button.disabled = active;
+        if (button.dataset.format === format) {
+          button.textContent = active
+            ? `Gerando ${format.toUpperCase()}...`
+            : `Baixar ${format.toUpperCase()}`;
+        }
+      });
+    }
+
+    async function baixarDocumento(format) {
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      setLoading(true, format);
+
+      try {
+        const response = await fetch(`/api/v1/assistente/gerar-documento?formato=${format}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(getFormData()),
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text() || 'Nao foi possivel gerar o documento.');
+        }
+
+        const blob = await response.blob();
+        const disposition = response.headers.get('content-disposition') || '';
+        const match = disposition.match(/filename="?([^"]+)"?/i);
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.href = url;
+        link.download = match?.[1] || `documento.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        feedback.className = 'feedback error';
+        feedback.textContent = error.message;
+      } finally {
+        setLoading(false, format);
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => baixarDocumento(button.dataset.format));
+    });
+  </script>
+</body>
+</html>
