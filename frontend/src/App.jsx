@@ -21,7 +21,7 @@ const emptyDocumento = {
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard' },
-  { id: 'dashboard', label: 'Processos' },
+  { id: 'processos', label: 'Processos' },
   { id: 'dashboard', label: 'Clientes' },
   { id: 'chat', label: 'Chat IA' },
   { id: 'documentos', label: 'Documentos' },
@@ -353,6 +353,176 @@ function DashboardPage({ onNavigate, user, onLogout }) {
   );
 }
 
+function ProcessosPage({ onNavigate }) {
+  const [form, setForm] = useState({
+    documento: '',
+    tribunal: 'TJPI',
+    documentoCliente: '',
+  });
+  const [resultado, setResultado] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [savingProcesso, setSavingProcesso] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [error, setError] = useState('');
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function consultar(event) {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+    setFeedback('');
+
+    try {
+      const data = await api.consultarProcessos({
+        documento: form.documento,
+        tribunal: form.tribunal,
+      });
+
+      setResultado(data);
+    } catch (err) {
+      setResultado(null);
+      setError(err.message || 'Nao foi possivel consultar a API REST.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function monitorar(processo) {
+    const numeroProcesso = processo.numero || form.documento;
+    setSavingProcesso(numeroProcesso);
+    setError('');
+    setFeedback('');
+
+    try {
+      await api.createMonitoramento({
+        numeroProcesso,
+        tribunal: processo.tribunal || form.tribunal,
+        documentoCliente: form.documentoCliente || form.documento,
+      });
+
+      setFeedback('Processo adicionado ao monitoramento.');
+    } catch (err) {
+      setError(err.message || 'Nao foi possivel monitorar este processo.');
+    } finally {
+      setSavingProcesso('');
+    }
+  }
+
+  const processos = resultado?.processos || [];
+
+  return (
+    <main className="process-page">
+      <aside className="sidebar">
+        <h2>JusRadar</h2>
+
+        <ul className="menu">
+          {menuItems.map((item, index) => (
+            <li key={`${item.label}-${index}`}>
+              <button type="button" onClick={() => onNavigate(item.id)}>
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <section className="process-main">
+        <div className="topbar">
+          <h1>Consulta de Processos</h1>
+          <button type="button" className="secondary-button" onClick={() => onNavigate('dashboard')}>
+            Voltar
+          </button>
+        </div>
+
+        {error && <div className="feedback error">{error}</div>}
+        {feedback && <div className="feedback success">{feedback}</div>}
+
+        <form className="process-form" onSubmit={consultar}>
+          <input
+            type="text"
+            value={form.documento}
+            onChange={(event) => updateField('documento', event.target.value)}
+            placeholder="Numero do processo"
+            required
+          />
+          <input
+            type="text"
+            value={form.tribunal}
+            onChange={(event) => updateField('tribunal', event.target.value)}
+            placeholder="Tribunal"
+            required
+          />
+          <input
+            type="text"
+            value={form.documentoCliente}
+            onChange={(event) => updateField('documentoCliente', event.target.value)}
+            placeholder="Documento do cliente"
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Consultando...' : 'Consultar'}
+          </button>
+        </form>
+
+        <div className="table-container">
+          <h2>
+            {resultado
+              ? `${resultado.totalEncontrados} processo(s) encontrado(s)`
+              : 'Resultados da consulta'}
+          </h2>
+
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Processo</th>
+                  <th>Classe</th>
+                  <th>Orgao julgador</th>
+                  <th>Ultima movimentacao</th>
+                  <th>Acao</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5">Consultando DataJud pelo backend...</td>
+                  </tr>
+                ) : processos.length === 0 ? (
+                  <tr>
+                    <td colSpan="5">Informe um processo para consultar.</td>
+                  </tr>
+                ) : (
+                  processos.map((processo) => (
+                    <tr key={processo.numero}>
+                      <td>{processo.numero}</td>
+                      <td>{processo.classe || '-'}</td>
+                      <td>{processo.orgaoJulgador || '-'}</td>
+                      <td>{processo.situacao || processo.dataUltimaMovimentacao || '-'}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="table-button"
+                          disabled={savingProcesso === processo.numero}
+                          onClick={() => monitorar(processo)}
+                        >
+                          {savingProcesso === processo.numero ? 'Salvando...' : 'Monitorar'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function ChatPage({ onNavigate }) {
   const [form, setForm] = useState({
     numeroProcesso: '0000000-00',
@@ -643,6 +813,10 @@ export default function App() {
 
   if (page === 'chat' && user) {
     return <ChatPage onNavigate={setPage} />;
+  }
+
+  if (page === 'processos' && user) {
+    return <ProcessosPage onNavigate={setPage} />;
   }
 
   if (page === 'documentos' && user) {

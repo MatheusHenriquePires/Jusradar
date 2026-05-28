@@ -104,6 +104,15 @@ export const api = {
 
   listMonitoramentos: () => request('/monitoramentos'),
 
+  consultarProcessos: ({ documento, tribunal }) => {
+    const params = new URLSearchParams({
+      documento,
+      tribunal,
+    });
+
+    return request(`/processos?${params.toString()}`);
+  },
+
   createMonitoramento: (data) =>
     request('/monitoramentos', {
       method: 'POST',
