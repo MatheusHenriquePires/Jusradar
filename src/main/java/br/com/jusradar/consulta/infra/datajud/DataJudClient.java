@@ -8,6 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+<<<<<<< HEAD
+=======
+import org.springframework.web.server.ResponseStatusException;
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -65,8 +69,15 @@ public class DataJudClient {
         } catch (Exception e) {
 
             log.error("Erro ao consultar DataJud", e);
+<<<<<<< HEAD
 
             return List.of();
+=======
+            throw new ResponseStatusException(
+                HttpStatus.BAD_GATEWAY,
+                "Nao foi possivel consultar o DataJud. Verifique a chave, o tribunal e a conectividade."
+            );
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
         }
     }
 
@@ -123,4 +134,8 @@ public class DataJudClient {
             default -> "api_publica_tjpi";
         };
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)

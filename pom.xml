@@ -165,6 +165,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+<<<<<<< HEAD
+=======
+					<parameters>true</parameters>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.mapstruct</groupId>

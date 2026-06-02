@@ -153,12 +153,34 @@ button:disabled {
   text-align: center;
 }
 
+<<<<<<< HEAD
+=======
+.register {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 .register a {
   color: #d35400;
   font-weight: bold;
   text-decoration: none;
 }
 
+<<<<<<< HEAD
+=======
+.register .link-button {
+  align-self: center;
+}
+
+.register .forgot-link,
+.register .back-link {
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 .dashboard-page,
 .document-page,
 .process-page {
@@ -168,6 +190,7 @@ button:disabled {
 }
 
 .sidebar {
+<<<<<<< HEAD
   background: #1f2937;
   color: white;
   padding: 30px 20px;
@@ -202,6 +225,200 @@ button:disabled {
 
 .menu button:hover {
   background: #374151;
+=======
+  background: #0f1116;
+  border-right: 1px solid rgb(255 255 255 / 6%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 24px 18px 20px;
+  width: 296px;
+}
+
+.sidebar-brand {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 4px 2px 18px;
+}
+
+.sidebar-logo {
+  align-items: center;
+  background: linear-gradient(180deg, #ff7a1a 0%, #f2571f 100%);
+  border-radius: 14px;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.sidebar-logo span {
+  background: white;
+  border-radius: 10px;
+  display: block;
+  height: 18px;
+  width: 18px;
+}
+
+.sidebar-brand-text strong {
+  color: #ff7a1a;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.sidebar-sections {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-label {
+  color: rgb(255 255 255 / 28%);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 6px 10px 0;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 16px;
+  color: rgb(255 255 255 / 58%);
+  display: flex;
+  gap: 12px;
+  padding: 14px 14px;
+  position: relative;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.sidebar-item:hover {
+  background: rgb(255 255 255 / 4%);
+  color: #ffffff;
+}
+
+.sidebar-item.active {
+  background: linear-gradient(90deg, #3b241b 0%, #342016 100%);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 #ff6b1a;
+}
+
+.sidebar-item.active::before {
+  background: #ff6b1a;
+  border-radius: 999px;
+  content: '';
+  height: 24px;
+  left: 0;
+  position: absolute;
+  width: 4px;
+}
+
+.sidebar-item-icon {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  font-size: 18px;
+  justify-content: center;
+  min-width: 22px;
+}
+
+.sidebar-item-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sidebar-badge {
+  background: #ff6b1a;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 34px;
+  padding: 5px 9px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  align-items: center;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.sidebar-user {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sidebar-avatar {
+  align-items: center;
+  background: linear-gradient(180deg, #ff7a1a 0%, #f2571f 100%);
+  border-radius: 999px;
+  color: white;
+  display: flex;
+  flex: 0 0 40px;
+  font-weight: 800;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.sidebar-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-user-text strong {
+  color: white;
+  font-size: 15px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-text span {
+  color: rgb(255 255 255 / 44%);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.sidebar-more {
+  background: transparent;
+  border: 0;
+  color: rgb(255 255 255 / 38%);
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 6px;
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 }
 
 .dashboard-main,

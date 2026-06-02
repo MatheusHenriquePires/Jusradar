@@ -13,4 +13,10 @@ public class CriarMonitoramentoRequest {
     private String numeroProcesso;
     private String tribunal;
     private String documentoCliente;
+<<<<<<< HEAD
 }
+=======
+    private String nomeCliente;
+    private String emailCliente;
+}
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)

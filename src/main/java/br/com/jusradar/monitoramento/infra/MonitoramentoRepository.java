@@ -10,5 +10,10 @@ public interface MonitoramentoRepository extends JpaRepository<Monitoramento, UU
 
     List<Monitoramento> findByAdvogadoId(UUID advogadoId);
 
+<<<<<<< HEAD
+=======
+    java.util.Optional<Monitoramento> findFirstByNumeroProcessoAndAdvogadoId(String numeroProcesso, UUID advogadoId);
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
     java.util.Optional<Monitoramento> findByIdAndAdvogadoId(UUID id, UUID advogadoId);
 }

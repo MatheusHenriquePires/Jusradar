@@ -57,7 +57,11 @@ public class AssistenteController {
     @PostMapping("/gerar-documento")
     public ResponseEntity<byte[]> gerarDocumento(
             @RequestBody DocumentoRequest request,
+<<<<<<< HEAD
             @RequestParam(defaultValue = "pdf") String formato) {
+=======
+            @RequestParam(name = "formato", defaultValue = "pdf") String formato) {
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
         String conteudo = geradorDocumento.gerarConteudo(request);
 

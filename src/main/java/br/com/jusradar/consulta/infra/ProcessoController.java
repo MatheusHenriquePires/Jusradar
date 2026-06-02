@@ -14,9 +14,18 @@ public class ProcessoController {
 
     @GetMapping
     public ConsultaResponse consultar(
+<<<<<<< HEAD
         @RequestParam String documento,
         @RequestParam(defaultValue = "TJPI") String tribunal
     ) {
         return service.consultar(documento, tribunal);
     }
 }
+=======
+        @RequestParam(name = "documento") String documento,
+        @RequestParam(name = "tribunal", defaultValue = "TJPI") String tribunal
+    ) {
+        return service.consultar(documento, tribunal);
+    }
+}
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)

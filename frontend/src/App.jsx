@@ -6,6 +6,10 @@ const USER_NAME_KEY = 'jusradar_user_name';
 const emptyMonitoramento = {
   numeroProcesso: '',
   tribunal: 'TJPI',
+<<<<<<< HEAD
+=======
+  nomeCliente: '',
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
   documentoCliente: '',
 };
 
@@ -19,6 +23,7 @@ const emptyDocumento = {
   tipoDocumento: 'PETICAO_SIMPLES',
 };
 
+<<<<<<< HEAD
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'processos', label: 'Processos' },
@@ -31,6 +36,108 @@ const menuItems = [
 
 function getClientName(item) {
   return item.cliente?.nome || item.documentoCliente || 'Cliente nao informado';
+=======
+const sidebarSections = [
+  {
+    label: 'Principal',
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'DB' },
+      { id: 'processos', label: 'Processos', icon: 'PR', badgeKey: 'processos' },
+      { id: 'clientes', label: 'Clientes', icon: 'CL', route: 'dashboard' },
+      { id: 'audiencias', label: 'Audiências', icon: 'AU', badgeKey: 'audiencias', route: 'dashboard' },
+    ],
+  },
+  {
+    label: 'Ferramentas',
+    items: [
+      { id: 'chat', label: 'Chat IA', icon: 'IA' },
+      { id: 'documentos', label: 'Documentos', icon: 'DO' },
+      { id: 'relatorios', label: 'Relatórios', icon: 'RG', route: 'dashboard' },
+      { id: 'configuracoes', label: 'Configurações', icon: 'CF', route: 'dashboard' },
+    ],
+  },
+];
+
+function getClientName(item) {
+  return item.cliente?.nome || 'Cliente nao informado';
+}
+
+function getClientDocument(item) {
+  return item.cliente?.documento || item.documentoCliente || '-';
+}
+
+function getSidebarUserName(user) {
+  return localStorage.getItem(USER_NAME_KEY) || user?.email || 'Matheus Henrique';
+}
+
+function getUserInitials(name) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('');
+}
+
+function Sidebar({ active, counts = {}, onNavigate, onLogout, user }) {
+  const displayName = getSidebarUserName(user);
+  const initials = getUserInitials(displayName) || 'MH';
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-logo" aria-hidden="true">
+          <span />
+        </div>
+        <div className="sidebar-brand-text">
+          <strong>JusRadar</strong>
+        </div>
+      </div>
+
+      <div className="sidebar-sections">
+        {sidebarSections.map((section) => (
+          <div className="sidebar-group" key={section.label}>
+            <span className="sidebar-label">{section.label}</span>
+            <nav className="sidebar-nav" aria-label={section.label}>
+              {section.items.map((item) => {
+                const isActive = active === item.id;
+                const count = item.badgeKey ? counts[item.badgeKey] : null;
+
+                return (
+                  <button
+                    type="button"
+                    key={item.id}
+                    className={`sidebar-item${isActive ? ' active' : ''}`}
+                    onClick={() => onNavigate(item.route || item.id)}
+                  >
+                    <span className="sidebar-item-icon" aria-hidden="true">
+                      {item.icon}
+                    </span>
+                    <span className="sidebar-item-label">{item.label}</span>
+                    {count ? <span className="sidebar-badge">{count}</span> : null}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        ))}
+      </div>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
+          <div className="sidebar-avatar">{initials}</div>
+          <div className="sidebar-user-text">
+            <strong>{displayName}</strong>
+            <span>Advogado Senior</span>
+          </div>
+        </div>
+        <button type="button" className="sidebar-more" onClick={onLogout} aria-label="Mais opcoes">
+          ...
+        </button>
+      </div>
+    </aside>
+  );
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 }
 
 function formatDate(value) {
@@ -55,13 +162,35 @@ function getStatus(item) {
   };
 }
 
+<<<<<<< HEAD
+=======
+function getInitialRoute() {
+  if (window.location.pathname === '/reset-password') {
+    return 'reset-password';
+  }
+
+  return 'login';
+}
+
+function getResetTokenFromUrl() {
+  return new URLSearchParams(window.location.search).get('token') || '';
+}
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 function LoginPage({ onAuthenticated }) {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ nome: '', email: '', senha: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+<<<<<<< HEAD
 
   const isRegister = mode === 'register';
+=======
+  const [success, setSuccess] = useState('');
+
+  const isRegister = mode === 'register';
+  const isForgotPassword = mode === 'forgot-password';
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -71,6 +200,10 @@ function LoginPage({ onAuthenticated }) {
     event.preventDefault();
     setLoading(true);
     setError('');
+<<<<<<< HEAD
+=======
+    setSuccess('');
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
     try {
       if (isRegister) {
@@ -83,6 +216,21 @@ function LoginPage({ onAuthenticated }) {
         localStorage.setItem(USER_NAME_KEY, form.nome);
       }
 
+<<<<<<< HEAD
+=======
+      if (isForgotPassword) {
+        await api.forgotPassword({
+          email: form.email,
+        });
+
+        setSuccess(
+          'Se o e-mail existir, enviaremos as instrucoes para redefinir sua senha.',
+        );
+        setForm({ nome: '', email: '', senha: '' });
+        return;
+      }
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
       const response = await api.login({
         email: form.email,
         senha: form.senha,
@@ -113,8 +261,23 @@ function LoginPage({ onAuthenticated }) {
         </div>
 
         <form className="login-right" onSubmit={handleSubmit}>
+<<<<<<< HEAD
           <h2>{isRegister ? 'Cadastro do Advogado' : 'Login do Advogado'}</h2>
           <p>Entre na plataforma para acompanhar seus processos.</p>
+=======
+          <h2>
+            {isForgotPassword
+              ? 'Recuperar senha'
+              : isRegister
+                ? 'Cadastro do Advogado'
+                : 'Login do Advogado'}
+          </h2>
+          <p>
+            {isForgotPassword
+              ? 'Digite seu e-mail para receber as instrucoes de recuperacao.'
+              : 'Entre na plataforma para acompanhar seus processos.'}
+          </p>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
           {isRegister && (
             <input
@@ -136,6 +299,7 @@ function LoginPage({ onAuthenticated }) {
             required
           />
 
+<<<<<<< HEAD
           <input
             type="password"
             value={form.senha}
@@ -149,6 +313,30 @@ function LoginPage({ onAuthenticated }) {
 
           <button type="submit" disabled={loading}>
             {loading ? 'Conectando...' : isRegister ? 'Cadastrar e entrar' : 'Entrar'}
+=======
+          {!isForgotPassword && (
+            <input
+              type="password"
+              value={form.senha}
+              onChange={(event) => updateField('senha', event.target.value)}
+              placeholder="Digite sua senha"
+              aria-label="Senha"
+              required
+            />
+          )}
+
+          {error && <div className="feedback error">{error}</div>}
+          {success && <div className="feedback success">{success}</div>}
+
+          <button type="submit" disabled={loading}>
+            {loading
+              ? 'Processando...'
+              : isForgotPassword
+                ? 'Enviar link de recuperacao'
+                : isRegister
+                  ? 'Cadastrar e entrar'
+                  : 'Entrar'}
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
           </button>
 
           <div className="register">
@@ -159,10 +347,41 @@ function LoginPage({ onAuthenticated }) {
               onClick={() => {
                 setMode(isRegister ? 'login' : 'register');
                 setError('');
+<<<<<<< HEAD
+=======
+                setSuccess('');
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
               }}
             >
               {isRegister ? 'Entrar' : 'Cadastrar'}
             </button>
+<<<<<<< HEAD
+=======
+            <button
+              type="button"
+              className="link-button forgot-link"
+              onClick={() => {
+                setMode('forgot-password');
+                setError('');
+                setSuccess('');
+              }}
+            >
+              Esqueci minha senha
+            </button>
+            {isForgotPassword && (
+              <button
+                type="button"
+                className="link-button back-link"
+                onClick={() => {
+                  setMode('login');
+                  setError('');
+                  setSuccess('');
+                }}
+              >
+                Voltar para o login
+              </button>
+            )}
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
           </div>
         </form>
       </section>
@@ -170,6 +389,104 @@ function LoginPage({ onAuthenticated }) {
   );
 }
 
+<<<<<<< HEAD
+=======
+function ResetPasswordPage() {
+  const [form, setForm] = useState({
+    token: getResetTokenFromUrl(),
+    senha: '',
+    confirmarSenha: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    if (form.senha !== form.confirmarSenha) {
+      setError('As senhas nao conferem.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await api.resetPassword({
+        token: form.token,
+        senha: form.senha,
+      });
+
+      setSuccess('Senha redefinida com sucesso. Agora voce pode entrar novamente.');
+      setForm({ token: '', senha: '', confirmarSenha: '' });
+    } catch (err) {
+      setError(err.message || 'Nao foi possivel redefinir a senha.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="login-page">
+      <section className="login-container">
+        <div className="login-left">
+          <h1>JusRadar</h1>
+          <p>Redefinicao de senha com link seguro por e-mail.</p>
+
+          <div className="info-box">Token com expiracao curta</div>
+          <div className="info-box">Nova senha no proprio navegador</div>
+        </div>
+
+        <form className="login-right" onSubmit={handleSubmit}>
+          <h2>Redefinir senha</h2>
+          <p>Use o token recebido por e-mail para criar uma nova senha.</p>
+
+          <input
+            type="text"
+            value={form.token}
+            onChange={(event) => updateField('token', event.target.value)}
+            placeholder="Token de recuperacao"
+            aria-label="Token de recuperacao"
+            required
+          />
+
+          <input
+            type="password"
+            value={form.senha}
+            onChange={(event) => updateField('senha', event.target.value)}
+            placeholder="Nova senha"
+            aria-label="Nova senha"
+            required
+          />
+
+          <input
+            type="password"
+            value={form.confirmarSenha}
+            onChange={(event) => updateField('confirmarSenha', event.target.value)}
+            placeholder="Confirmar nova senha"
+            aria-label="Confirmar nova senha"
+            required
+          />
+
+          {error && <div className="feedback error">{error}</div>}
+          {success && <div className="feedback success">{success}</div>}
+
+          <button type="submit" disabled={loading}>
+            {loading ? 'Redefinindo...' : 'Trocar senha'}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 function DashboardPage({ onNavigate, user, onLogout }) {
   const [monitoramentos, setMonitoramentos] = useState([]);
   const [newMonitoramento, setNewMonitoramento] = useState(emptyMonitoramento);
@@ -233,6 +550,7 @@ function DashboardPage({ onNavigate, user, onLogout }) {
 
   return (
     <main className="dashboard-page">
+<<<<<<< HEAD
       <aside className="sidebar">
         <h2>JusRadar</h2>
 
@@ -251,6 +569,18 @@ function DashboardPage({ onNavigate, user, onLogout }) {
           </li>
         </ul>
       </aside>
+=======
+      <Sidebar
+        active="dashboard"
+        counts={{
+          processos: monitoramentos.length,
+          audiencias: 0,
+        }}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+        user={user}
+      />
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
       <section className="dashboard-main">
         <div className="topbar">
@@ -298,6 +628,17 @@ function DashboardPage({ onNavigate, user, onLogout }) {
             placeholder="Documento do cliente"
             required
           />
+<<<<<<< HEAD
+=======
+          <input
+            type="text"
+            value={newMonitoramento.nomeCliente}
+            onChange={(event) =>
+              updateMonitoramento('nomeCliente', event.target.value)
+            }
+            placeholder="Nome do cliente"
+          />
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
           <button type="submit" disabled={saving}>
             {saving ? 'Salvando...' : 'Adicionar'}
           </button>
@@ -312,6 +653,10 @@ function DashboardPage({ onNavigate, user, onLogout }) {
                 <tr>
                   <th>Processo</th>
                   <th>Cliente</th>
+<<<<<<< HEAD
+=======
+                  <th>Documento</th>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
                   <th>Status</th>
                   <th>Ultima Atualizacao</th>
                 </tr>
@@ -320,11 +665,19 @@ function DashboardPage({ onNavigate, user, onLogout }) {
               <tbody>
                 {loading ? (
                   <tr>
+<<<<<<< HEAD
                     <td colSpan="4">Carregando dados do backend...</td>
                   </tr>
                 ) : monitoramentos.length === 0 ? (
                   <tr>
                     <td colSpan="4">Nenhum processo monitorado ainda.</td>
+=======
+                    <td colSpan="5">Carregando dados do backend...</td>
+                  </tr>
+                ) : monitoramentos.length === 0 ? (
+                  <tr>
+                    <td colSpan="5">Nenhum processo monitorado ainda.</td>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
                   </tr>
                 ) : (
                   monitoramentos.map((item) => {
@@ -334,6 +687,10 @@ function DashboardPage({ onNavigate, user, onLogout }) {
                       <tr key={item.id || item.numeroProcesso}>
                         <td>{item.numeroProcesso}</td>
                         <td>{getClientName(item)}</td>
+<<<<<<< HEAD
+=======
+                        <td>{getClientDocument(item)}</td>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
                         <td>
                           <span className={`status ${status.className}`}>
                             {status.label}
@@ -353,10 +710,18 @@ function DashboardPage({ onNavigate, user, onLogout }) {
   );
 }
 
+<<<<<<< HEAD
 function ProcessosPage({ onNavigate }) {
   const [form, setForm] = useState({
     documento: '',
     tribunal: 'TJPI',
+=======
+function ProcessosPage({ onNavigate, onLogout, user }) {
+  const [form, setForm] = useState({
+    documento: '',
+    tribunal: 'TJPI',
+    nomeCliente: '',
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
     documentoCliente: '',
   });
   const [resultado, setResultado] = useState(null);
@@ -400,6 +765,10 @@ function ProcessosPage({ onNavigate }) {
       await api.createMonitoramento({
         numeroProcesso,
         tribunal: processo.tribunal || form.tribunal,
+<<<<<<< HEAD
+=======
+        nomeCliente: form.nomeCliente,
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
         documentoCliente: form.documentoCliente || form.documento,
       });
 
@@ -415,6 +784,7 @@ function ProcessosPage({ onNavigate }) {
 
   return (
     <main className="process-page">
+<<<<<<< HEAD
       <aside className="sidebar">
         <h2>JusRadar</h2>
 
@@ -428,6 +798,14 @@ function ProcessosPage({ onNavigate }) {
           ))}
         </ul>
       </aside>
+=======
+      <Sidebar
+        active="processos"
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+        user={user}
+      />
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
       <section className="process-main">
         <div className="topbar">
@@ -461,6 +839,15 @@ function ProcessosPage({ onNavigate }) {
             onChange={(event) => updateField('documentoCliente', event.target.value)}
             placeholder="Documento do cliente"
           />
+<<<<<<< HEAD
+=======
+          <input
+            type="text"
+            value={form.nomeCliente}
+            onChange={(event) => updateField('nomeCliente', event.target.value)}
+            placeholder="Nome do cliente"
+          />
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
           <button type="submit" disabled={loading}>
             {loading ? 'Consultando...' : 'Consultar'}
           </button>
@@ -495,8 +882,13 @@ function ProcessosPage({ onNavigate }) {
                     <td colSpan="5">Informe um processo para consultar.</td>
                   </tr>
                 ) : (
+<<<<<<< HEAD
                   processos.map((processo) => (
                     <tr key={processo.numero}>
+=======
+                  processos.map((processo, index) => (
+                    <tr key={`${processo.numero}-${processo.orgaoJulgador || 'sem-orgao'}-${index}`}>
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
                       <td>{processo.numero}</td>
                       <td>{processo.classe || '-'}</td>
                       <td>{processo.orgaoJulgador || '-'}</td>
@@ -651,7 +1043,11 @@ function ChatPage({ onNavigate }) {
   );
 }
 
+<<<<<<< HEAD
 function DocumentosPage({ onNavigate }) {
+=======
+function DocumentosPage({ onNavigate, onLogout, user }) {
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
   const [form, setForm] = useState(emptyDocumento);
   const [loadingFormat, setLoadingFormat] = useState('');
   const [error, setError] = useState('');
@@ -684,6 +1080,7 @@ function DocumentosPage({ onNavigate }) {
 
   return (
     <main className="document-page">
+<<<<<<< HEAD
       <aside className="sidebar">
         <h2>JusRadar</h2>
 
@@ -697,6 +1094,14 @@ function DocumentosPage({ onNavigate }) {
           ))}
         </ul>
       </aside>
+=======
+      <Sidebar
+        active="documentos"
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+        user={user}
+      />
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
       <section className="document-main">
         <div className="topbar">
@@ -785,7 +1190,11 @@ function DocumentosPage({ onNavigate }) {
 }
 
 export default function App() {
+<<<<<<< HEAD
   const [page, setPage] = useState('login');
+=======
+  const [page, setPage] = useState(getInitialRoute);
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
   const [user, setUser] = useState(() => getStoredUser());
 
   useEffect(() => {
@@ -816,11 +1225,23 @@ export default function App() {
   }
 
   if (page === 'processos' && user) {
+<<<<<<< HEAD
     return <ProcessosPage onNavigate={setPage} />;
   }
 
   if (page === 'documentos' && user) {
     return <DocumentosPage onNavigate={setPage} />;
+=======
+    return <ProcessosPage onNavigate={setPage} onLogout={handleLogout} user={user} />;
+  }
+
+  if (page === 'documentos' && user) {
+    return <DocumentosPage onNavigate={setPage} onLogout={handleLogout} user={user} />;
+  }
+
+  if (page === 'reset-password') {
+    return <ResetPasswordPage />;
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
   }
 
   return <LoginPage onAuthenticated={setUser} />;

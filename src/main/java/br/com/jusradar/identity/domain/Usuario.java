@@ -3,6 +3,10 @@ package br.com.jusradar.identity.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import br.com.jusradar.monitoramento.domain.Monitoramento;
+<<<<<<< HEAD
+=======
+import com.fasterxml.jackson.annotation.JsonIgnore;
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
@@ -31,5 +35,9 @@ public class Usuario {
     private java.time.LocalDateTime criadoEm;
 
     @OneToMany(mappedBy = "advogado")
+<<<<<<< HEAD
+=======
+    @JsonIgnore
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
     private List<Monitoramento> monitoramentos;
 }

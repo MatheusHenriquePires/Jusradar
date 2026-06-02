@@ -53,9 +53,15 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const message =
+<<<<<<< HEAD
       typeof payload === 'string' && payload
         ? payload
         : 'Nao foi possivel completar a solicitacao.';
+=======
+      (payload && typeof payload === 'object' && (payload.message || payload.error || payload.detail)) ||
+      (typeof payload === 'string' && payload.trim()) ||
+      'Nao foi possivel completar a solicitacao.';
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
 
     throw new Error(message);
   }
@@ -102,6 +108,21 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+<<<<<<< HEAD
+=======
+  forgotPassword: (data) =>
+    request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  resetPassword: (data) =>
+    request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+>>>>>>> 4bd12d3 (Atualização p deploy vercel)
   listMonitoramentos: () => request('/monitoramentos'),
 
   consultarProcessos: ({ documento, tribunal }) => {
